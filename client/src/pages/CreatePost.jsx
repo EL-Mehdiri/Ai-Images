@@ -14,9 +14,32 @@ const CreatePost = () => {
     const [generatingImg, setGeneratingImg] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const generateImage = () => {
 
-    }
+    const generateImage = async () => {
+        if (form.prompt) {
+            try {
+                setGeneratingImg(true);
+                const response = await fetch('https://dalle-arbb.onrender.com/api/v1/dalle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: form.prompt,
+                    }),
+                });
+
+                const data = await response.json();
+                setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+            } catch (err) {
+                alert(err);
+            } finally {
+                setGeneratingImg(false);
+            }
+        } else {
+            alert('Please provide proper prompt');
+        }
+    };
     const handleSubmit = () => {
 
     }
@@ -38,20 +61,22 @@ const CreatePost = () => {
             </div>
             <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-5">
-                    <FormField LabelName='Your name'
-                        type='text'
-                        name='name'
-                        placeholder='John Doe'
+                    <FormField
+                        labelName="Your Name"
+                        type="text"
+                        name="name"
+                        placeholder="Ex., john doe"
                         value={form.name}
                         handleChange={handleChange}
                     />
-                    <FormField LabelName='Promt'
-                        type='text'
-                        name='prompt'
-                        placeholder='An Impressionist oil painting of sunflowers in a purple vase..'
+                    <FormField
+                        labelName="Prompt"
+                        type="text"
+                        name="prompt"
+                        placeholder="An Impressionist oil painting of sunflowers in a purple vase…"
                         value={form.prompt}
                         handleChange={handleChange}
-                        isSurptiseMe
+                        isSurpriseMe
                         handleSurpriseMe={handleSurpriseMe}
                     />
                     <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
